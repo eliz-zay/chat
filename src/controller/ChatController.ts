@@ -3,22 +3,29 @@ import { makeValidateBody } from 'express-class-validator';
 
 import { transformAndValidate, JwtPayload } from '../common';
 import { AddPrivateChatRequest, ChatHistoryRequest, ChatSchema, MessageSchema } from '../schema';
-import { ChatService } from '../service/ChatService';
+import { UserService, ChatService } from '../service';
+import { getAuthMiddleware } from './middleware';
 
-export function getChatController(chatService: ChatService) {
+export function getChatController(userService: UserService, chatService: ChatService) {
     const controller = express.Router();
 
-    controller.post('/add-private-chat', makeValidateBody(AddPrivateChatRequest), async (req: express.Request & { auth: JwtPayload }, res, next) => {
-        try {
-            const chat: ChatSchema = await chatService.addPrivateChat(req.auth, req.body);
+    const checkIfUserAuthorized = getAuthMiddleware(userService);
 
-            return res.status(200).json({ chat });
-        } catch (err) {
-            return next(err);
+    controller.post('/add-private-chat',
+        checkIfUserAuthorized,
+        makeValidateBody(AddPrivateChatRequest),
+        async (req: express.Request & { auth: JwtPayload }, res, next) => {
+            try {
+                const chat: ChatSchema = await chatService.addPrivateChat(req.auth, req.body);
+
+                return res.status(200).json({ chat });
+            } catch (err) {
+                return next(err);
+            }
         }
-    })
+    );
 
-    controller.get('/', async (req: express.Request & { auth: JwtPayload }, res, next) => {
+    controller.get('/', checkIfUserAuthorized, async (req: express.Request & { auth: JwtPayload }, res, next) => {
         try {
             const chatQuery = await transformAndValidate(ChatHistoryRequest, req.query);
 

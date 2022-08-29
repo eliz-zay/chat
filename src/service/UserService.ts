@@ -1,8 +1,8 @@
 import { Repository } from 'typeorm';
 
-import { JwtPayload, ApiError, getDataSource, generateHash, generateSalt, generateToken } from '../common';
 import { User } from '../model';
-import { SignUpRequest, LoggedInResponse, SignInRequest } from '../schema';
+import { JwtPayload, ApiError, getDataSource, generateHash, generateSalt, generateToken } from '../common';
+import { SignUpRequest, LoggedInResponse, SignInRequest, UserSchema, transformToUserSchema } from '../schema';
 
 export class UserService {
     private userRepository: Repository<User>;
@@ -50,6 +50,16 @@ export class UserService {
         const token = await this.generateUserToken(user);
 
         return { id: user.id, token };
+    }
+
+    public async getUserInfo(jwtPayload: JwtPayload): Promise<UserSchema> {
+        const user = await this.userRepository.findOne({ where: { id: jwtPayload.id } });
+
+        if (!user) {
+            throw new ApiError('User not found');
+        }
+
+        return transformToUserSchema(user);
     }
 
     private async generateUserToken(user: User): Promise<string> {

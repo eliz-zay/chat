@@ -2,16 +2,24 @@ import * as express from 'express';
 import { WebSocketServer } from 'ws';
 
 import { verifyToken, JwtPayload } from '../common';
+import { UserService } from '../service';
 
-export function onHttpUpgrade(wsServer: WebSocketServer) {
+export interface OnHttpUpgradeParams {
+    wsServer: WebSocketServer;
+    userService: UserService;
+};
+
+export function onHttpUpgrade({ wsServer, userService }: OnHttpUpgradeParams) {
     return async (request: express.Request & { auth: JwtPayload }, socket, head) => {
         try {
             const token = request.headers.authorization?.split('Bearer ')[1];
 
-            const payload: JwtPayload = await verifyToken(token);
+            const jwtPayload: JwtPayload = await verifyToken(token);
 
-            request.auth = payload;
+            request.auth = jwtPayload;
 
+            await userService.getUserInfo(jwtPayload);
+        
         } catch (err) {
             socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
             socket.destroy();

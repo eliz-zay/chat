@@ -5,7 +5,7 @@ import { WebSocketServer } from 'ws';
 
 import { initApp, InitAppParams } from './app';
 import { initWsServer, InitWsServerParams } from './websocket';
-import { getOnMessageHandler, onHttpUpgrade } from './listener'
+import { getOnMessageHandler, onHttpUpgrade, OnHttpUpgradeParams } from './listener'
 import { getDataSource } from './common';
 import { UserService, MessageService, ChatService } from './service';
 import { getAuthController, getChatController } from './controller';
@@ -23,7 +23,7 @@ async function bootstrapServer() {
 
     const initAppParams: InitAppParams = {
         '/auth': getAuthController(userService),
-        '/chat': getChatController(chatService)
+        '/chat': getChatController(userService, chatService),
     };
 
     const initWsServerParams: InitWsServerParams = {
@@ -38,7 +38,7 @@ async function bootstrapServer() {
         console.log(`App listening on port ${process.env.PORT}\n`);
     });
 
-    server.on('upgrade', onHttpUpgrade(wsServer));
+    server.on('upgrade', onHttpUpgrade({ wsServer, userService }));
 }
 
 bootstrapServer();
