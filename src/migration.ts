@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 
-import { getDataSource } from './common/db';
+import { getDataSource } from './common';
 
 dotenv.config();
 

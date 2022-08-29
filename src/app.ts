@@ -2,21 +2,21 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { expressjwt } from 'express-jwt';
 
-import { ApiError } from './common/ApiError';
-import { getAuthController, getChatController } from './controller';
-import { UserService, ChatService } from './service';
+import { ApiError } from './common';
 
-export async function initApp(
-    userService: UserService,
-    chatService: ChatService
-): Promise<express.Application> {
+export interface InitAppParams {
+    [route: string]: express.Router;
+}
+
+export async function initApp(controllers: InitAppParams): Promise<express.Application> {
     const app = express();
 
     app.use(bodyParser.json());
     app.use(expressjwt({ secret: process.env.JWT_SECRET, credentialsRequired: false, algorithms: ['HS256'] }));
 
-    app.use('/auth', getAuthController(userService));
-    app.use('/chat', getChatController(chatService));
+    Object.entries(controllers).forEach(([route, controller]) => {
+        app.use(route, controller);
+    });
 
     app.use((err, req, res, next) => {
         if (err instanceof ApiError) {

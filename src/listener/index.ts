@@ -1,2 +1,2 @@
 export * from './httpUpgrade';
-export * from './SocketEventHandler';
+export * from './ws-handlers';

@@ -1,8 +1,7 @@
 import * as express from 'express';
 import { WebSocketServer } from 'ws';
 
-import { verifyToken } from '../common/crypt';
-import { JwtPayload } from '../schema';
+import { verifyToken, JwtPayload } from '../common';
 
 export function onHttpUpgrade(wsServer: WebSocketServer) {
     return async (request: express.Request & { auth: JwtPayload }, socket, head) => {

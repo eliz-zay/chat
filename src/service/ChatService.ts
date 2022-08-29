@@ -1,10 +1,8 @@
 import { Repository } from 'typeorm';
-import { ApiError } from '../common/ApiError';
 
-import { getDataSource } from '../common/db';
+import { JwtPayload, ApiError, getDataSource } from '../common';
 import { Chat, User } from '../model';
 import {
-    JwtPayload,
     ChatSchema,
     MessageSchema,
     transformToChatSchema,
@@ -30,8 +28,8 @@ export class ChatService {
         const sender = await this.userRepository.findOne({ where: { id: jwtPayload.id }});
         const receiver = await this.userRepository.findOne({ where: { id: payload.userId }});
 
-        if (!receiver) {
-            throw new ApiError('Receiver not found');
+        if (!sender || !receiver) {
+            throw new ApiError('User not found');
         }
 
         const existingChat = await this.chatRepository

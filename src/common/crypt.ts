@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 
-import { JwtPayload } from '../schema';
+import { JwtPayload } from './';
 
 export function generateSalt() {
     return crypto.randomBytes(16).toString('hex');

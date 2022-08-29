@@ -1,10 +1,8 @@
 import { Repository } from 'typeorm';
 
-import { getDataSource } from '../common/db';
-import { generateHash, generateSalt, generateToken } from '../common/crypt';
+import { JwtPayload, ApiError, getDataSource, generateHash, generateSalt, generateToken } from '../common';
 import { User } from '../model';
-import { SignUpRequest, LoggedInResponse, SignInRequest, JwtPayload } from '../schema';
-import { ApiError } from '../common/ApiError';
+import { SignUpRequest, LoggedInResponse, SignInRequest } from '../schema';
 
 export class UserService {
     private userRepository: Repository<User>;

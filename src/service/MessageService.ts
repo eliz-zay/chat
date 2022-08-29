@@ -1,9 +1,8 @@
 import { Repository } from 'typeorm';
-import { ApiError } from '../common/ApiError';
 
-import { getDataSource } from '../common/db';
+import { JwtPayload, ApiError, getDataSource } from '../common';
 import { Message, Chat } from '../model';
-import { JwtPayload, AddMessageWsSchema, MessageSchema, transformToMessageSchema } from '../schema';
+import { AddMessageWsSchema, MessageSchema, transformToMessageSchema } from '../schema';
 
 export class MessageService {
     private messageRepository: Repository<Message>;

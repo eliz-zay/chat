@@ -1,9 +1,8 @@
 import * as express from 'express';
 import { makeValidateBody } from 'express-class-validator';
 
-import { transformAndValidate } from '../common/validation';
+import { transformAndValidate, JwtPayload } from '../common';
 import { AddPrivateChatRequest, ChatHistoryRequest, ChatSchema, MessageSchema } from '../schema';
-import { JwtPayload } from '../schema';
 import { ChatService } from '../service/ChatService';
 
 export function getChatController(chatService: ChatService) {
