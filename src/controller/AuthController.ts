@@ -27,10 +27,5 @@ export function getAuthController(userService: UserService): express.Router {
         }
     });
 
-    controller.get('/health-check', async (req, res, next) => {
-        console.log(req.headers);
-        return res.status(200).json({});
-    });
-
     return controller;
 }
